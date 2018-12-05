@@ -1,1 +1,10 @@
 __pycache__/*
+.ipynb_checkpoints/*
+env/*
+summaries/*
+ALPaCA/*
+MC_Q_samples/*
+Pretrained_alpaca/*
+test_play.py
+Plots/*
+main/__pychache__/*

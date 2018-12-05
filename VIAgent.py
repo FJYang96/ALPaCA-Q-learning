@@ -109,7 +109,6 @@ class MCVI():
         # TODO: vectorize the code here
         cnt = 0
         while True:
-            print("Iteration: ", cnt)
             # For each state
             # Q[pos,vel,a] = max_a (R[pos,vel,a] + Q[pos', vel'])
             new_q_table = np.zeros((self.gran, self.gran, self.A))
@@ -148,9 +147,18 @@ class MCVI():
 
     def get_value(self, observation):
         """
-        Get the value of an observation-action pair
+        Get the values of an observation
         """
         ob_ind = self.s_to_ind(np.array([observation]))[0]
         ob_ind = tuple(ob_ind)
         return self.q_table[ob_ind]
         
+    def get_values(self, positions, velocities):
+        """
+        Get multiple values for corresponding observation-action pairs
+        positions:  1xN
+        velocities: 1xN
+        """
+        observations = np.stack([positions, velocities]).T
+        ob_ind = self.s_to_ind(observations)
+        return self.q_table[ob_ind[:, 0], ob_ind[:, 1]]

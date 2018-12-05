@@ -25,16 +25,17 @@ def train(env, agent, it=100):
     # Episode ends; post-episode updates
     agent.post_episode_update(np.mean(ep_lengths))
 
-def render_episode(env, agent, it=400):
+def play_episode(env, agent, it=400, render=True):
     observation = env.reset()
     done = False
     cnt = 0
     while (not done) and (cnt <= it):
-        env.render()
+        if render:
+            env.render()
         cnt += 1
         action = agent.get_action(observation,False)
         observation, reward, done, _ = env.step(action)
-    print('game lasted', cnt, 'moves')
+    return cnt
 
 def get_VI_trajectory(env, VIagent, it=400):
     observation = env.reset()
