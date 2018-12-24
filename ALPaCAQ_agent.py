@@ -145,36 +145,36 @@ class ALPaCA_Q():
                 np.copyto(self.target_L_inv, self.L_inv)
         return step
 
-    def ts_non_bootstrap(self, step_limit):
-        # Initialize agent
-        self.sample_last_layer()
-        # Initialize env variables
+    def ts_sample_traj(self, step_limit):
+        """
+        Samples a trajectory to use for Monte-Carlo training
+        """
+        sa_traj, reward_traj = [], []
         observation = self.env.reset()
+        counter = 0
         done = False
-        step = 0
-        # Initialize an array to store the trajectory
-        
-        while (step < step_limit) and not done:
+        # Sample a trajectory
+        while counter < step_limit and not done:
+            # sample action based on sampled last layer
             sampled_q_values = self.predict_sampled_q_values(observation)
             action = np.argmax(sampled_q_values)
-            if render:
-                self.env.render()
-            new_ob, reward, done, _ = self.env.step(action)
-            if not done:
-                next_q_value = self.predict_target_q_values(new_ob).max()
-                next_q_value = min(next_q_value, 0)
-                target = self.data.normalize_y(reward + next_q_value)
-                self.update_model(observation, action, target)
-            else:
-                target = self.data.normalize_y(0)
-                self.update_model(observation, action, target)
-            observation = new_ob
-            step = step + 1
-            self.num_steps += 1
-            if self.num_steps % self.update_target == 0:
-                self.target_K = self.K.copy()
-                self.target_L_inv = self.L_inv.copy()
-        return step
+            sa_traj.append((observation, action))
+            observation, reward, done, _ = self.env.step(action)
+            reward_traj.append(reward)
+            counter = counter + 1
+        # convert reward to target values
+        target_val = np.cumsum(reward_traj[::-1])[::-1]
+        return sa_traj, target_val
+
+    def ts_non_bootstrap(self, step_limit):
+        # Resample last layer every episode
+        self.sample_last_layer()
+        # Sample a trajectory and find target values in the traj
+        sa_traj, target_val = self.ts_sample_traj(step_limit)
+        episode_length = len(target_val)
+        for i in range(episode_length):
+            self.update_model(*sa_traj[i], target_val[i])
+        return episode_length
 
     def ts_train(self, step_limit=300, num_episode=200):
         for i in range(num_episode):
