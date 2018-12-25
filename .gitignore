@@ -7,4 +7,4 @@ MC_Q_samples/*
 Pretrained_alpaca/*
 test_play.py
 Plots/*
-main/__pychache__/*
+alpaca/__pycache__/*

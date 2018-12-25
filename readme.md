@@ -14,14 +14,14 @@ The files are organized as follows:
 ```
 .
 |--agent/
-|  |--ALPaCAQ.py:    the alpaca Q learning agent
-|  |--Random.py:     agent with random action
-|  |--VIAgent.py:    agent that acts according to the result of value iteration
+|  |--alpacaQ.py:    the alpaca Q learning agent
+|  |--random.py:     agent with random action
 |--alpaca/
 |  |--alpaca.py:     the original alpaca agent for meta-supervised learning
 |  |--dataset.py:    dataset wrapper class for alpaca training
 |--metamountaincar/
 |  |--mmc.py:         mountain car environment with varying gravity and thrust
+|  |--VI.py:          code for value iteration 
 |  |--mmcDataset.py:  dataset wrapper for alpaca training
 |  |--generateData.py:script for generating value functions for training
 |--config.yml:        experiment configuration parameters
