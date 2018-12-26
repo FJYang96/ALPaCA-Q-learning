@@ -1,10 +1,20 @@
-__pycache__/*
-.ipynb_checkpoints/*
+# pycache files
+*.pyc
+
+# virtualenv
 env/*
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints/*
+
+# tensorflow summaries
 summaries/*
-ALPaCA/*
-MC_Q_samples/*
+
+# dataset of mmc value functions
+metamountaincar/mmcDataset/*
+
+# pretrained alpaca networks
 Pretrained_alpaca/*
-test_play.py
+
+# experiment plots
 Plots/*
-alpaca/__pycache__/*

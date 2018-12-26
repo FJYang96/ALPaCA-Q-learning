@@ -1,9 +1,13 @@
+#########################################################################
+# From the ALPaCA repository by the ALPaCA authors
+# ALPaCA algorithm for supervised learning
+#########################################################################
+
 import tensorflow as tf
 import numpy as np
 import time
 from copy import deepcopy
 from tensorflow.python.ops.parallel_for import gradients
-
 
 class ALPaCA:
     def __init__(self, config, sess, graph=None, preprocess=None, f_nom=None):

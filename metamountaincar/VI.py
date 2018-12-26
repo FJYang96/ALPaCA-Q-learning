@@ -1,11 +1,19 @@
-from MCTransfer import MountainCarTransfer as MCF
-import numpy as np
+############################################################################
+# Fengjun Yang, 2018
+# Code for computing the value functions through value iteration in the
+# meta mountain car environment.
+############################################################################
 
-class MCVI():
+import numpy as np
+from mmcenv import MetaMountainCar as MMC
+
+class mmcVI():
     def __init__(self, granularity, step_limit, \
                  thrust=0.001, gravity=0.0025):
         """
-        Initialize the value iteration wrapper; build transition table
+        Input:
+            - granularity:  fineness of the VI discretization grid
+            - step_limit:   maximum number of steps for value iteration
         """
         # Set environment parameters
         self.min_position = -1.2

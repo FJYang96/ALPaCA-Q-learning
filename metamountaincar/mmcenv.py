@@ -1,13 +1,18 @@
+#####################################################################
+# Fengjun Yang, 2018
+# This file contains the meta-mountain-car environment. This environment
+# is an extension to the mountain car environment where the gravity
+# and thrust of the car can be varied.
+#####################################################################
+
 from gym.envs.classic_control import MountainCarEnv
 import numpy as np
 
+class MetaMountainCar(MountainCarEnv):
+    """
+    Wrapper class for the Meta mountain car environment
+    """
 
-class MountainCarTransfer(MountainCarEnv):
-    """
-    This class is a wrapper for creating MountainCar environment
-    with a certain level of gravity for usage in meta-/transfer-
-    learning experiment
-    """
     def __init__(self, thrust=0.001, gravity=0.0025):
         super().__init__()
         self.thrust = thrust
@@ -18,7 +23,7 @@ class MountainCarTransfer(MountainCarEnv):
         """
         Overriding the step function of original MountainCar enviroment
         to incorporate adjusted gravity
-        Code fully adapted from the original openAI gym MountainCar code
+        Code adapted from the original openAI gym MountainCar code
         """
         assert self.action_space.contains(action), \
             "%r (%s) invalid" % (action, type(action))
@@ -36,5 +41,4 @@ class MountainCarTransfer(MountainCarEnv):
 
         self.state = (position, velocity)
         return np.array(self.state), reward, done, {}
-
 

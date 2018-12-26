@@ -10,22 +10,24 @@ is built upon the MountainCar-v0 environment from gym. The code in mmc.py
 contains code from [openAI
 gym](https://github.com/openai/gym/blob/master/gym/envs/classic_control/mountain_car.py).
 
-The files are organized as follows:
+The files are organized as following:
 ```
 .
 |--agent/
-|  |--alpacaQ.py:    the alpaca Q learning agent
-|  |--random.py:     agent with random action
-|--alpaca/
-|  |--alpaca.py:     the original alpaca agent for meta-supervised learning
-|  |--dataset.py:    dataset wrapper class for alpaca training
+|  |--alpacaQ.py:       the alpaca Q learning agent
+|  |--random.py:        agent with random action
+|  |--alpaca.py:        implementation of the original alpaca algorithm
 |--metamountaincar/
-|  |--mmc.py:         mountain car environment with varying gravity and thrust
-|  |--VI.py:          code for value iteration 
-|  |--mmcDataset.py:  dataset wrapper for alpaca training
-|  |--generateData.py:script for generating value functions for training
-|--config.yml:        experiment configuration parameters
-|--experiment.ipynb:  jupyter notebook for the experiments in the writeup
-|--utility.py:        some utility functions for experiment and plotting
-|--readme.md:         this file
+|  |--mmc.py:           mountain car environment with varying gravity and thrust
+|  |--VI.py:            code for value iteration 
+|  |--mmcDataset.py:    dataset wrapper for alpaca training
+|  |--generateData.py:  script for generating value functions for training
+|  |--dataset.py:       dataset wrapper class for alpaca training
+|  |--utility.py:       utility functions for experiment and plotting
+|--config.yml:          experiment configuration parameters
+|--experiment.ipynb:    jupyter notebook for the experiments in the writeup
+|--readme.md
+|--writeup.pdf
 ```
+
+Questions and suggestions are very welcome. You can reach me at fyang3[attt]stanford[dotttt]edu
