@@ -5,7 +5,7 @@
 ############################################################################
 
 import numpy as np
-from mmcenv import MetaMountainCar as MMC
+from metamountaincar.mmcenv import MetaMountainCar as MMC
 
 class mmcVI():
     def __init__(self, granularity, step_limit, \

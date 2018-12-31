@@ -30,4 +30,16 @@ The files are organized as following:
 |--writeup.pdf
 ```
 
+This repository is still under construction. The issues include:
+- ~~rewrite plotting functions~~
+- rewrite offline dataset to use the normalizer
+- move sample_parameters method into MMC class. Have MMC randomly sample a set
+    of environment parameters during initialization
+- make sure saving and loading works for alpaca offline agent
+- test online prediction of alpaca offline agents
+- rewrite alpaca Q agents and separate them into different classes
+- rerun experiments and see it they work
+- bug in value iteration. (T-table has indices over bounds). If had time,
+write triangle discretization to replace naive discretization.
+
 Questions and suggestions are very welcome. You can reach me at fyang3[attt]stanford[dotttt]edu

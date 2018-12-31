@@ -1,9 +1,9 @@
-from main.dataset import Dataset, PresampledTrajectoryDataset
-from VIAgent import MCVI
+from metamountaincar.VI import mmcVI
+from metamountaincar.mmcNormalize import mmcNorm
 import numpy as np
 import yaml
 
-class MCOnlineSampleDataset(Dataset):
+class mmcDataset:
     """
     Samples a new trajectory from MountainCarTransfer environment every
     time a new data trajectory is requested
@@ -24,9 +24,10 @@ class MCOnlineSampleDataset(Dataset):
         else:
             self.noise_std = np.sqrt( noise_var )
         # Can specify the rng if desired
-        self.np_random = rng
         if rng is None:
-            self.np_random = np.random
+            self.rng = np.random
+        else:
+            self.rng = rng
 
     def sample_parameter(self, param_range, num):
         """
@@ -34,7 +35,7 @@ class MCOnlineSampleDataset(Dataset):
         param_range should be a tuple/list: [lower, upper]
         """
         param = param_range[0] \
-            + self.np_random.random(num) * (param_range[1] - param_range[0])
+            + self.rng.random(num) * (param_range[1] - param_range[0])
         return param
 
     def sample(self, n_funcs, n_samples, return_lists=False):
@@ -49,13 +50,13 @@ class MCOnlineSampleDataset(Dataset):
         grav = self.sample_parameter(self.gravity_range, n_funcs)
         thru = self.sample_parameter(self.thrust_range, n_funcs)
         for i in range(n_funcs):
-            VIagent = MCVI(self.gran, self.step_limit, \
-                           gravity=grav[i], thrust=thru[i])
+            VIagent = mmcVI(self.gran, self.step_limit, \
+                           thrust=thru[i], gravity=grav[i])
             VIagent.value_iteration()
             pos_samp = self.sample_parameter(self.pos_range, n_samples)
             vel_samp = self.sample_parameter(self.vel_range, n_samples)
             y_samp = VIagent.get_values(pos_samp, vel_samp)\
-                + self.noise_std * self.np_random.randn(n_samples, 3)
+                + self.noise_std * self.rng.randn(n_samples, 3)
             x_samp = np.stack([pos_samp, vel_samp]).T
             x[i,:,:] = x_samp
             y[i,:,:] = y_samp
@@ -65,7 +66,7 @@ class MCOnlineSampleDataset(Dataset):
 
         return x, y
 
-class MCOfflineDataset(Dataset):
+class MCOfflineDataset:
     """
     Reads presampled q-value data from directory as a wrapper for ALPaCA
     training

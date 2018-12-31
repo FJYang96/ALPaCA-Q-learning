@@ -1,9 +1,14 @@
+##################################################################
+# Fengjun Yang, 2018
+# Code for doing q-learning with the alpaca algorithm
+##################################################################
+
 import numpy as np
 import tensorflow as tf
-from main.alpaca import ALPaCA
-from MCDataset import MCOfflineDataset
+from agent.alpaca import ALPaCA
+from metamountaincar.mmcDataset import MCOfflineDataset
 
-class ALPaCA_Q():
+class ALPaCAQ():
     """
     The online part (agent) of the ALPaCA Q learning
     Takes an environment and a pretrained Alpaca agent and can be trained

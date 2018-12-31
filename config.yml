@@ -10,16 +10,18 @@ meta_batch_size: 10
 nn_layers: [128, 128, 16]
 activation: 'tanh'
 
-# MC parameters
-data_dir: './MC_Q_samples/close/'
-num_data: 110
-gran: 150
-step_limit: 200
-
+# Environment parameters
 thrust_range: [0.0006, 0.0015]
 gravity_range: [0.002, 0.003]
 pos_range: [-1.2, 0.6]
 vel_range: [-0.07, 0.07]
+
+# VI parameters
+data_dir: './metamountaincar/mmcDataset/close/'
+num_data: 110
+gran: 150
+step_limit: 200
+
 
 # Empirical normalizing constants
 pos_var: 0.5 

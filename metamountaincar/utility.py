@@ -4,6 +4,25 @@
 # for the mountain car environment.
 ############################################
 
+from metamountaincar.VI import mmcVI
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+
+def sample_mmc_parameters(config):
+    """
+    Sample a gravity - thrust file that is compatible with the config file
+    """
+    # Sample a thrust-gravity pair
+    thrust_range = config['thrust_range']
+    gravity_range = config['gravity_range']
+    thrust_diff = thrust_range[1] - thrust_range[0]
+    grav_diff = gravity_range[1] - gravity_range[0]
+    thrust = np.random.random() * thrust_diff + thrust_range[0]
+    grav = np.random.random() * grav_diff + gravity_range[0]
+    return grav, thrust
+
 def play_episode(env, agent, it=400, render=True):
     """
     Let an agent act in the environment for one episode and get back the
@@ -27,55 +46,6 @@ def play_episode(env, agent, it=400, render=True):
         observation, reward, done, _ = env.step(action)
     return cnt
 
-def plot_learned_cost_to_go(ALPaCA_Q, grid, savedir=None):
-    """
-    Plot the learned cost to go function for an ALPaCA_Q agent. This is designed to
-    work with the mountain car environment and does not necessarily generalize to
-    other domains of interest
-    Input:
-        - ALPaCA_Q: a trained alpaca_q agent
-        - grid:     finess of the 3D mesh for plotting. Higher values means finer.
-        - savedir:  used for saving the figure. If savedir is None, then the plot
-                    will not be saved
-    """
-    # Process the data for plotting
-    X = np.arange(-1.2, 0.6, 1.8/grid)
-    Y = np.arange(-0.07, 0.07, 0.14/grid)
-    X,Y = np.meshgrid(X,Y)
-    # Fill in the table by iteratively querying the agent
-    Z = np.zeros(X.shape)
-    for i in range(grid):
-        for j in range(grid):
-            Z[i,j] = ALPaCA_Q.predict_q_values(np.array([X[i,j],Y[i,j]])).max()
-    # Plotting
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(X,Y,-Z, cmap=cm.coolwarm)
-    if savedir is not None:
-        fig.savefig(savedir,transparent=True)
-
-def plot_learned_variance(ALPaCA_Q, grid, savedir=None):
-    """
-    Similar to plot_learned_cost_to_go, except for plotting variance instead
-    of mean
-    """
-    # Process the data for plotting
-    X = np.arange(-1.2, 0.6, 1.8/grid)
-    Y = np.arange(-0.07, 0.07, 0.14/grid)
-    X,Y = np.meshgrid(X,Y)
-    # Fill in the table by iteratively querying the agent
-    Z = np.zeros(X.shape)
-    for i in range(grid):
-        for j in range(grid):
-            s = np.array([X[i,j],Y[i,j]])
-            Z[i,j] = ALPaCA_Q.predict_var(s).mean()
-    # Plotting
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(X,Y,np.sqrt(Z), cmap=cm.coolwarm)
-    if savedir is not None:
-        fig.savefig(savedir,transparent=True)
-
 def get_VI_trajectory(env, VIagent, it=400):
     observation = env.reset()
     done = False
@@ -96,3 +66,65 @@ def get_VI_trajectory(env, VIagent, it=400):
     a_traj = np.array(a_traj).T
     q_traj = np.array(q_traj).T
     return np.vstack([s_traj, a_traj, q_traj]).T
+
+def ctg_table_helper(table, savedir=None):
+    """
+    Helper function for plotting the cost to go function in the meta mountain
+    car environment, given the ctg table.
+    """
+    # Process the data for plotting
+    x_gran, y_gran = table.shape[0], table.shape[1]
+    X = np.arange(-1.2, 0.6, 1.8/x_gran)
+    Y = np.arange(-0.07, 0.07, 0.14/y_gran)
+    X,Y = np.meshgrid(X,Y)
+    # Plotting
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(X,Y,table, cmap=cm.coolwarm)
+    if savedir is not None:
+        fig.savefig(savedir,transparent=True)
+
+def ctg_func_helper(func, gran, savedir=None):
+    """
+    Helper function for plotting the cost-to-go function in the meta mountain
+    car environment. Take as input a function that 
+    Input:
+        - func: the function to plot
+        - gran: the fineness of the grid
+    """
+    # Fill in the table by iteratively querying the agent
+    Z = np.zeros(X.shape)
+    for i in range(gran):
+        for j in range(gran):
+            Z[i,j] = func(np.array([X[i,j],Y[i,j]]))
+    ctg_table_helper(Z, savedir)
+
+def plot_true_cost_to_go(env, gran, it, savedir=None):
+    """
+    Plot the cost-to-go found by value iteration
+    Input:
+        - env: a meta mountaincar environment
+        - gran: granularity of the VI algorithm
+        - it: max number of iterations for the VI algorithm
+    """
+    VIagent = mmcVI(gran, it, gravity=env.gravity, thrust=env.thrust)
+    VIagent.value_iteration()
+    Q_table = VIagent.q_table
+    V_table = np.max(Q_table, axis=2)
+    print(V_table.shape)
+    ctg_table_helper(-V_table, savedir)
+
+def plot_learned_ctg(agent, gran, savedir=None):
+    """
+    Plot the state value function
+    """
+    func = lambda x: agent.predict_q_values(x).max()
+    ctg_func_helper(func, gran, savedir)
+
+def plot_variance(agent, gran, savedir=None):
+    """
+    Plot the mean variance for all the actions of a state
+    """
+    func = lambda x: agent.predict_var(x).mean()
+    ctg_func_helper(func, gran, savedir)
+
