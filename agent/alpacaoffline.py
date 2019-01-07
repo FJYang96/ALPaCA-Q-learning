@@ -20,7 +20,8 @@ class ALPaCAOffline:
             - config:   a dictionary of the configuration parameters
         """
         self.graph = tf.Graph()
-        self.sess = tf.InteractiveSession(config=tf.ConfigProto(log_device_placement=True), graph=self.graph)
+        self.sess = tf.InteractiveSession(
+            config=tf.ConfigProto(log_device_placement=True), graph=self.graph)
         self.alpaca = ALPaCA(config, self.sess, self.graph)
         self.alpaca.construct_model()
         self.config = config

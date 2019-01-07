@@ -66,7 +66,7 @@ class mmcDataset:
 
         return x, y
 
-class MCOfflineDataset:
+class mmcOfflineDataset:
     """
     Reads presampled q-value data from directory as a wrapper for ALPaCA
     training
@@ -78,10 +78,7 @@ class MCOfflineDataset:
         self.y_dim = config['y_dim']
         self.num_funcs = config['meta_batch_size']
         # Normalizing constant
-        self.pos_var = config['pos_var']
-        self.vel_var = config['vel_var']
-        self.q_mean  = config['q_mean']
-        self.q_var   = config['q_var']
+        self.normalizer = mmcNorm(config)
     
     def read_dataset(self, N):
         """
@@ -92,31 +89,6 @@ class MCOfflineDataset:
         data = yaml.load(f)
         f.close()
         return data
-
-    def normalize_x(self, x):
-        """
-        Manually normalize x and y to speed up training.
-        This is not ideal, but in practice improves the convergence
-        on ALPacA
-        """
-        x_norm = np.zeros(x.shape)
-        x_norm[:,:,0] = x[:,:,0] / self.pos_var 
-        x_norm[:,:,1] = x[:,:,1] / self.vel_var
-        return x_norm
-
-    def normalize_y(self, y):
-        y_norm = (y - self.q_mean) / self.q_var
-        return y_norm
-
-    def denormalize_x(self, x_norm):
-        x = np.zeros(x_norm.shape)
-        x[:,:,0] = x_norm[:,:,0] * self.pos_var
-        x[:,:,1] = x_norm[:,:,1] * self.vel_var
-        return x
-
-    def denormalize_y(self, y_norm):
-        y = y_norm * self.q_var + self.q_mean
-        return y
 
     def sample(self, n_funcs, n_samples):
         assert n_funcs == self.num_funcs
@@ -132,8 +104,7 @@ class MCOfflineDataset:
             raise ValueError('You are requesting more samples \
                              than are in the dataset.')
         inds_to_keep = np.random.choice(T, n_samples)
-        np.copyto(x, self.normalize_x(X[:,inds_to_keep,:]))
-        np.copyto(y, self.normalize_y(Y[:,inds_to_keep,:]))
-        #np.copyto(y, Y[:,inds_to_keep,:])
+        np.copyto(x, self.normalizer.norm_x(X[:,inds_to_keep,:]))
+        np.copyto(y, self.normalizer.norm_y(Y[:,inds_to_keep,:]))
         
         return x,y

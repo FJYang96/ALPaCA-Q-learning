@@ -15,6 +15,7 @@ metamountaincar/mmcDataset/*
 
 # pretrained alpaca networks
 Pretrained_alpaca/*
+saveagent/*
 
 # experiment plots
 Plots/*

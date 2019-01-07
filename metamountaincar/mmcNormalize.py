@@ -36,3 +36,6 @@ class mmcNorm:
     def denorm_y(self, y_norm):
         y = y_norm * self.q_var + self.q_mean
         return y
+
+    def denorm_var_pred(self, y_var):
+        return y_var * (self.q_var ** 2)

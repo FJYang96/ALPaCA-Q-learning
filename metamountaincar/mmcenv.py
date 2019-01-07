@@ -13,11 +13,26 @@ class MetaMountainCar(MountainCarEnv):
     Wrapper class for the Meta mountain car environment
     """
 
-    def __init__(self, thrust=0.001, gravity=0.0025):
+    def __init__(self, config, thrust=0.001, gravity=0.0025):
         super().__init__()
+        self.thrust = self._sample_mmc_parameters(config['thrust_range'])
+        self.gravity = self._sample_mmc_parameters(config['gravity_range'])
+
+    def _sample_mmc_parameters(self, param_range):
+        """
+        Sample a parameter based from the range given by param_range
+        Input: - param_range: a tuple in the form (lower_bound, upper_bound)
+        """
+        diff = param_range[1] - param_range[0]
+        sample = np.random.random() * diff + param_range[0]
+        return sample
+
+    def set_env_param(self, thrust, gravity):
         self.thrust = thrust
         self.gravity = gravity
 
+    def get_env_param(self):
+        return (self.thrust, self.gravity)
 
     def step(self, action):
         """
